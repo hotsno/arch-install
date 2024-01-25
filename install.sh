@@ -14,13 +14,14 @@ echo "Choose a drive: "
 read drive
 cfdisk $drive
 
+lsblk
 echo "Choose the swap partition: "
-read $swap_part
+read swap_part
 mkswap $swap_part
 swapon $swap_part
 
 echo "Choose the Linux partition: "
-read $linux_part
+read linux_part
 mkfs.ext4 $linux_part
 
 echo "Ranking pacman mirrors..."
@@ -35,8 +36,6 @@ sed '1,/^#part2$/d' `basename $0` > /mnt/install-2.sh
 chmod +x /mnt/install-2.sh
 
 arch-chroot /mnt ./install-2.sh
-
-systemctl reboot
 
 #part2
 hostname=""
@@ -62,7 +61,7 @@ echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
 mkdir /boot/efi
 lsblk
 echo "Choose the EFI partition: "
-read $efi_part
+read efi_part
 mount $efi_part /boot/efi
 grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck
 grub-mkconfig -o /boot/grub/grub.cfg
