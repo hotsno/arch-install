@@ -9,10 +9,10 @@ echo -e "\n\nConnecting to Wi-Fi...\n\n\n"
 iwctl --passphrase $wifi_pw station wlan0 connect $wifi_name
 
 echo -e "Installing some packages...\n\n\n"
-pacman -S pacman-contrib --noconfirm
-pacman -S grub efibootmgr os-prober --noconfirm
-pacman -S xorg-server xorg-xinit libx11 libxft libxinerama freetype2 fontconfig ttf-dejavu --noconfirm
-pacman -S sudo vim git --noconfirm
+pacman -Sy pacman-contrib --noconfirm
+pacman -Sy grub efibootmgr os-prober --noconfirm
+pacman -Sy xorg-server xorg-xinit libx11 libxft libxinerama freetype2 fontconfig ttf-dejavu --noconfirm
+pacman -Sy sudo vim git --noconfirm
 
 lsblk
 echo -e "\nChoose a drive: "
