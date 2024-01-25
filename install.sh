@@ -23,6 +23,7 @@ swapon $swap_part
 echo "Choose the Linux partition: "
 read linux_part
 mkfs.ext4 $linux_part
+mount $linux_part /mnt
 
 echo "Ranking pacman mirrors..."
 cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
