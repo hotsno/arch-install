@@ -88,16 +88,14 @@ nmtui
 
 sudo pacman -Syu --noconfirm
 
-sudo pacman -S xorg-server xorg-xinit libx11 libxft libxinerama freetype2
+sudo pacman -S xorg-server xorg-xinit libx11 libxft libxinerama freetype2 fontconfig git ttf-dejavu vim --noconfirm
 git clone https://git.suckless.org/dwm
 cd dwm
-make
 sudo make clean install
 cd ..
 
 git clone https://git.suckless.org/st
 cd st
-make 
 sudo make clean install
 cd ..
 
