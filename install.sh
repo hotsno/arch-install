@@ -5,30 +5,34 @@ wifi_pw=""
 echo -e "\n\nWelcome to hotsno arch-install!\n\n\n"
 sleep 1
 
+echo -e "\n\nConnecting to Wi-Fi...\n\n\n"
+iwctl --passphrase $wifi_pw station wlan0 connect $wifi_name
+
 echo -e "Installing some packages...\n\n\n"
 pacman -S pacman-contrib --noconfirm
 pacman -S grub efibootmgr os-prober --noconfirm
 pacman -S xorg-server xorg-xinit libx11 libxft libxinerama freetype2 fontconfig ttf-dejavu --noconfirm
 pacman -S sudo vim git --noconfirm
 
-echo -e "\n\nConnecting to Wi-Fi...\n\n\n"
-iwctl --passphrase $wifi_pw station wlan0 connect $wifi_name
-
 lsblk
 echo -e "\nChoose a drive: "
 read drive
-cfdisk $drive
+cfdisk /dev/$drive
 
+echo -e "\n"
+sleep 1
 lsblk
 echo -e "\nChoose the swap partition: "
 read swap_part
-mkswap $swap_part
-swapon $swap_part
+mkswap /dev/$swap_part
+swapon /dev/$swap_part
 
+echo -e "\n"
+lsblk
 echo -e "\nChoose the Linux partition: "
 read linux_part
-mkfs.ext4 $linux_part
-mount $linux_part /mnt
+mkfs.ext4 /dev/$linux_part
+mount /dev/$linux_part /mnt
 
 echo -e "\n\nRanking pacman mirrors...\n\n\n"
 cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
@@ -71,7 +75,7 @@ mkdir /boot/efi
 lsblk
 echo "Choose the EFI partition: "
 read efi_part
-mount $efi_part /boot/efi
+mount /dev/$efi_part /boot/efi
 grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck
 grub-mkconfig -o /boot/grub/grub.cfg
 
