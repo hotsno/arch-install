@@ -38,6 +38,8 @@ chmod +x /mnt/install-2.sh
 
 arch-chroot /mnt ./install-2.sh
 
+exit
+
 #part2
 hostname=""
 username=""
