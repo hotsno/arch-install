@@ -10,9 +10,6 @@ iwctl --passphrase $wifi_pw station wlan0 connect $wifi_name
 
 echo -e "Installing some packages...\n\n\n"
 pacman -Sy pacman-contrib --noconfirm
-pacman -Sy grub efibootmgr os-prober --noconfirm
-pacman -Sy xorg-server xorg-xinit libx11 libxft libxinerama freetype2 fontconfig ttf-dejavu --noconfirm
-pacman -Sy sudo vim git --noconfirm
 
 lsblk
 echo -e "\nChoose a drive: "
@@ -42,7 +39,7 @@ echo -e "\n\nRunning pacstrap commands...\n\n\n"
 pacstrap /mnt base base-devel linux linux-firmware networkmanager
 pacstrap /mnt grub efibootmgr os-prober
 pacstrap /mnt xorg-server xorg-xinit libx11 libxft libxinerama freetype2 fontconfig ttf-dejavu
-pacstrap /mnt sudo vim git
+pacstrap /mnt sudo vim git pacman-contrib
 
 genfstab -U /mnt >> /mnt/etc/fstab
 
