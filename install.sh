@@ -2,34 +2,43 @@
 wifi_name=""
 wifi_pw=""
 
-echo "Welcome to hotsno arch-install!"
-echo "Installing some packages..."
-pacman -Sy pacman-contrib --noconfirm
+echo -e "\n\nWelcome to hotsno arch-install!\n\n\n"
+sleep 1
 
-echo "Connecting to Wi-Fi..."
+echo -e "Installing some packages...\n\n\n"
+pacman -S pacman-contrib --noconfirm
+pacman -S grub efibootmgr os-prober --noconfirm
+pacman -S xorg-server xorg-xinit libx11 libxft libxinerama freetype2 fontconfig ttf-dejavu --noconfirm
+pacman -S sudo vim git --noconfirm
+
+echo -e "\n\nConnecting to Wi-Fi...\n\n\n"
 iwctl --passphrase $wifi_pw station wlan0 connect $wifi_name
 
 lsblk
-echo "Choose a drive: "
+echo -e "\nChoose a drive: "
 read drive
 cfdisk $drive
 
 lsblk
-echo "Choose the swap partition: "
+echo -e "\nChoose the swap partition: "
 read swap_part
 mkswap $swap_part
 swapon $swap_part
 
-echo "Choose the Linux partition: "
+echo -e "\nChoose the Linux partition: "
 read linux_part
 mkfs.ext4 $linux_part
 mount $linux_part /mnt
 
-echo "Ranking pacman mirrors..."
+echo -e "\n\nRanking pacman mirrors...\n\n\n"
 cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
 rankmirrors -n 10 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist
 
+echo -e "\n\nRunning pacstrap commands...\n\n\n"
 pacstrap /mnt base base-devel linux linux-firmware networkmanager
+pacstrap /mnt grub efibootmgr os-prober
+pacstrap /mnt xorg-server xorg-xinit libx11 libxft libxinerama freetype2 fontconfig ttf-dejavu
+pacstrap /mnt sudo vim git
 
 genfstab -U /mnt >> /mnt/etc/fstab
 
@@ -56,9 +65,6 @@ echo $hostname > /etc/hostname
 echo "127.0.0.1       localhost" >> /etc/hosts
 echo "::1             localhost" >> /etc/hosts
 echo "127.0.0.1       $hostname.localdomain hotsno" >> /etc/hosts
-
-echo "Installing some packages..."
-pacman -Sy grub efibootmgr os-prober sudo --noconfirm
 
 echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
 mkdir /boot/efi
@@ -88,7 +94,6 @@ nmtui
 
 sudo pacman -Syu --noconfirm
 
-sudo pacman -S xorg-server xorg-xinit libx11 libxft libxinerama freetype2 fontconfig git ttf-dejavu vim --noconfirm
 git clone https://git.suckless.org/dwm
 cd dwm
 sudo make clean install
