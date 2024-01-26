@@ -101,6 +101,9 @@ sudo pacman -Syu --noconfirm
 
 systemctl --user --now enable pipewire pipewire-pulse wireplumber
 
+mkdir .config
+cd .config
+
 git clone https://git.suckless.org/dwm
 cd dwm
 sudo make clean install
@@ -109,7 +112,7 @@ cd ..
 git clone https://git.suckless.org/st
 cd st
 sudo make clean install
-cd ..
+cd ~
 
 echo "exec dwm" > ~/.xinitrc
 
