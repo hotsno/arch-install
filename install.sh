@@ -35,11 +35,13 @@ echo -e "\n\nRanking pacman mirrors...\n\n\n"
 cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
 rankmirrors -n 10 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist
 
-echo -e "\n\nRunning pacstrap commands...\n\n\n"
-pacstrap /mnt base base-devel linux linux-firmware networkmanager
-pacstrap /mnt grub efibootmgr os-prober
-pacstrap /mnt xorg-server xorg-xinit libx11 libxft libxinerama freetype2 fontconfig ttf-dejavu
-pacstrap /mnt sudo vim git pacman-contrib
+echo -e "\n\nRunning pacstrap...\n\n\n"
+pacstrap /mnt base base-devel linux linux-firmware \
+    grub efibootmgr os-prober \
+    xorg-server xorg-xinit libx11 libxft libxinerama freetype2 fontconfig ttf-dejavu \
+    mesa xf86-video-amdgpu vulkan-radeon libva-mesa-driver mesa-vdpau \
+    pipewire pipewire-alsa wireplumber pipewire-pulse pipewire-jack \
+    networkmanager sudo vim git pacman-contrib firefox man-db man-pages xorg-xrandr
 
 genfstab -U /mnt >> /mnt/etc/fstab
 
@@ -48,7 +50,7 @@ chmod +x /mnt/install-2.sh
 
 arch-chroot /mnt ./install-2.sh
 
-exit
+systemctl reboot
 
 #part2
 hostname=""
@@ -88,12 +90,16 @@ sed '1,/^#part3$/d' install-2.sh > $install_3_path
 chown $username:$username $install_3_path
 chmod +x $install_3_path
 
+rm /install-2.sh
+
 exit
 
 #part3
 nmtui
 
 sudo pacman -Syu --noconfirm
+
+systemctl --user --now enable pipewire pipewire-pulse wireplumber
 
 git clone https://git.suckless.org/dwm
 cd dwm
@@ -108,3 +114,5 @@ cd ..
 echo "exec dwm" > ~/.xinitrc
 
 startx
+
+rm ~/install-3.sh
