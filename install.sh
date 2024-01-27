@@ -38,10 +38,11 @@ rankmirrors -n 10 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist
 echo -e "\n\nRunning pacstrap...\n\n\n"
 pacstrap /mnt base base-devel linux linux-firmware \
     grub efibootmgr os-prober \
-    xorg-server xorg-xinit libx11 libxft libxinerama freetype2 fontconfig ttf-dejavu \
+    xorg-server xorg-xinit libx11 libxft libxinerama freetype2 fontconfig noto-fonts noto-fonts-cjk \
     mesa xf86-video-amdgpu vulkan-radeon libva-mesa-driver mesa-vdpau \
     pipewire pipewire-alsa wireplumber pipewire-pulse pipewire-jack \
-    networkmanager sudo vim git pacman-contrib firefox man-db man-pages xorg-xrandr
+    networkmanager sudo vim git pacman-contrib firefox man-db man-pages xorg-xrandr \
+    zsh python obs-studio eza scrot zip stow picom
 
 genfstab -U /mnt >> /mnt/etc/fstab
 
@@ -67,7 +68,7 @@ echo $hostname > /etc/hostname
 
 echo "127.0.0.1       localhost" >> /etc/hosts
 echo "::1             localhost" >> /etc/hosts
-echo "127.0.0.1       $hostname.localdomain hotsno" >> /etc/hosts
+echo "127.0.0.1       $hostname.localdomain $username" >> /etc/hosts
 
 echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
 mkdir /boot/efi
@@ -80,7 +81,8 @@ grub-mkconfig -o /boot/grub/grub.cfg
 
 systemctl enable NetworkManager.service
 
-useradd -m -G wheel $username
+useradd -m -G wheel -s /usr/bin/zsh $username
+echo -e "\n\nEnter password for $username: "
 passwd $username
 
 echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
@@ -99,23 +101,51 @@ nmtui
 
 sudo pacman -Syu --noconfirm
 
+mkdir dev dox pix dl media
+
+git clone https://github.com/hotsno/dotfiles $HOME/.dotfiles
+cd .dotfiles
+stow --no-folding .
+cd ..
+
+pacman -S --needed git base-devel
+git clone https://aur.archlinux.org/yay.git
+cd yay
+makepkg -si
+cd ..
+rm -rf yay
+
+yay -S ttf-twemoji
+sudo ln -sf /usr/share/fonctconfig/conf.avail/75-twemoji.conf /etc/fonts/conf.d/75-twemoji.conf
+
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+git clone https://github.com/zsh-users/zsh-autosuggestions $HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+git clone --depth=1 https://github.com/romkatv/powerlevel10k.git $HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+yay -S ttf-meslo-nerd-font-powerlevel10k
+
+xdg-settings set default-web-browser firefox.desktop
+
 systemctl --user --now enable pipewire pipewire-pulse wireplumber
 
 mkdir .config
 cd .config
 
-git clone https://git.suckless.org/dwm
+git clone https://github.com/hotsno/dwm
 cd dwm
 sudo make clean install
 cd ..
 
-git clone https://git.suckless.org/st
+git clone https://github.com/hotsno/st
 cd st
+sudo make clean install
+cd ..
+
+git clone https://github.com/hotsno/dmenu
+cd dmenu
 sudo make clean install
 cd ~
 
-echo "exec dwm" > ~/.xinitrc
-
-startx
-
 rm ~/install-3.sh
+
+exit
