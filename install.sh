@@ -8,7 +8,6 @@ sleep 1
 echo -e "\n\nConnecting to Wi-Fi...\n\n\n"
 iwctl --passphrase $wifi_pw station wlan0 connect $wifi_name
 
-echo -e "Installing some packages...\n\n\n"
 pacman -Sy pacman-contrib --noconfirm
 
 lsblk
@@ -97,11 +96,14 @@ rm /install-2.sh
 exit
 
 #part3
+rm -rf .bash*
 nmtui
 
 sudo pacman -Syu --noconfirm
 
 mkdir dev dox pix dl media
+
+git clone https://github.com/hotsno/wallpapers $HOME/pix/wall
 
 git clone https://github.com/hotsno/dotfiles $HOME/.dotfiles
 cd .dotfiles
@@ -109,20 +111,19 @@ stow --no-folding .
 cd ..
 
 pacman -S --needed git base-devel
-git clone https://aur.archlinux.org/yay.git
-cd yay
+git clone https://aur.archlinux.org/yay-bin.git
+cd yay-bin
 makepkg -si
 cd ..
 rm -rf yay
 
-yay -S ttf-twemoji
+yes | yay -S ttf-twemoji ttf-meslo-nerd-font-powerlevel10k
 sudo ln -sf /usr/share/fonctconfig/conf.avail/75-twemoji.conf /etc/fonts/conf.d/75-twemoji.conf
 
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $HOME/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
 git clone https://github.com/zsh-users/zsh-autosuggestions $HOME/.oh-my-zsh/custom/plugins/zsh-autosuggestions
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git $HOME/.oh-my-zsh/custom/themes/powerlevel10k
-yay -S ttf-meslo-nerd-font-powerlevel10k
 
 xdg-settings set default-web-browser firefox.desktop
 
