@@ -11,21 +11,21 @@ iwctl --passphrase $wifi_pw station wlan0 connect $wifi_name
 pacman -Sy pacman-contrib --noconfirm
 
 lsblk
-echo -e "\nChoose a drive: "
+echo -e "\nChoose a drive (ex. nvme0n1): "
 read drive
 cfdisk /dev/$drive
 
 echo -e "\n"
 sleep 1
 lsblk
-echo -e "\nChoose the swap partition: "
+echo -e "\nChoose the swap partition (ex. nvme0n1p5): "
 read swap_part
 mkswap /dev/$swap_part
 swapon /dev/$swap_part
 
 echo -e "\n"
 lsblk
-echo -e "\nChoose the Linux partition: "
+echo -e "\nChoose the Linux partition (ex. nvme0n1p6): "
 read linux_part
 mkfs.ext4 /dev/$linux_part
 mount /dev/$linux_part /mnt
@@ -72,7 +72,7 @@ echo "127.0.0.1       $hostname.localdomain $username" >> /etc/hosts
 echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
 mkdir /boot/efi
 lsblk
-echo "Choose the EFI partition: "
+echo "Choose the EFI partition (ex. nvme0n1p1): "
 read efi_part
 mount /dev/$efi_part /boot/efi
 grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck
