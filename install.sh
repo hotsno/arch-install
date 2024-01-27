@@ -41,7 +41,7 @@ pacstrap /mnt base base-devel linux linux-firmware \
     mesa xf86-video-amdgpu vulkan-radeon libva-mesa-driver mesa-vdpau \
     pipewire pipewire-alsa wireplumber pipewire-pulse pipewire-jack \
     networkmanager sudo vim git pacman-contrib firefox man-db man-pages xorg-xrandr \
-    zsh python obs-studio eza scrot zip stow picom
+    zsh python obs-studio eza scrot zip stow picom feh
 
 genfstab -U /mnt >> /mnt/etc/fstab
 
@@ -113,7 +113,7 @@ cd ..
 pacman -S --needed git base-devel
 git clone https://aur.archlinux.org/yay-bin.git
 cd yay-bin
-makepkg -si
+yes | makepkg -si
 cd ..
 rm -rf yay
 
