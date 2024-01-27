@@ -1,4 +1,4 @@
-#part1
+# Part 1
 wifi_name=""
 wifi_pw=""
 
@@ -45,14 +45,14 @@ pacstrap /mnt base base-devel linux linux-firmware \
 
 genfstab -U /mnt >> /mnt/etc/fstab
 
-sed '1,/^#part2$/d' `basename $0` > /mnt/install-2.sh
+sed '1,/^# Part 2$/d' `basename $0` > /mnt/install-2.sh
 chmod +x /mnt/install-2.sh
 
 arch-chroot /mnt ./install-2.sh
 
 systemctl reboot
 
-#part2
+# Part 2
 hostname=""
 username=""
 
@@ -87,7 +87,7 @@ passwd $username
 echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 install_3_path=/home/$username/install-3.sh
-sed '1,/^#part3$/d' install-2.sh > $install_3_path
+sed '1,/^# Part 3$/d' install-2.sh > $install_3_path
 chown $username:$username $install_3_path
 chmod +x $install_3_path
 
@@ -95,7 +95,7 @@ rm /install-2.sh
 
 exit
 
-#part3
+# Part 3
 rm -rf .bash*
 nmtui
 
