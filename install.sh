@@ -92,30 +92,20 @@ echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
 echo "LANG=en_US.UTF-8" > /etc/locale.conf
 
-echo -e "\n\nChoose a hostname: "
-read hostname
-echo $hostname > /etc/hostname
-
 echo "127.0.0.1       localhost" >> /etc/hosts
 echo "::1             localhost" >> /etc/hosts
 echo "127.0.0.1       $hostname.localdomain $username" >> /etc/hosts
 
 echo "GRUB_DISABLE_OS_PROBER=false" >> /etc/default/grub
 mkdir /boot/efi
-lsblk
-echo "Choose the EFI partition (ex. nvme0n1p1): "
-read efi_part
 mount /dev/$efi_part /boot/efi
 grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck
 grub-mkconfig -o /boot/grub/grub.cfg
 
 systemctl enable NetworkManager.service
 
-echo -e "\n\nChoose a username: "
-read username
 useradd -m -G wheel -s /usr/bin/zsh $username
-echo -e "\n\nEnter password for $username: "
-passwd $username
+echo $username:$password | chpasswd
 
 echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
