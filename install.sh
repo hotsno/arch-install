@@ -1,38 +1,69 @@
 # Part 1
-echo -e "\n\nWelcome to hotsno arch-install!\n\n"
+echo; echo; echo "Welcome to hotsno arch-install!"
 sleep 1
 
-wget -q --spider https://google.com
-if [ $? -ne 0 ]; then
+echo; echo "Choose a username: "
+read username
+
+echo "Choose a password: "
+read password
+
+echo "Choose a hostname: "
+read hostname
+
+clear; lsblk
+echo; echo "Choose a drive (ex. nvme0n1): "
+read drive
+cfdisk /dev/$drive
+
+clear; sleep 1; sudo fdisk -l
+echo; echo "Choose the EFI partition (ex. nvme0n1p1): "
+read efi_part
+
+clear; lsblk
+echo; echo "Choose the SWAP partition (ex. nvme0n1p5): "
+read swap_part
+
+echo; echo "Choose the root Linux partition (ex. nvme0n1p6): "
+read linux_part
+
+curl -Is https://www.google.com | head -1 | grep 200 >/dev/null
+if [[ $? -ne 0 ]]; then
     echo "Enter WiFi name: "
     read wifi_name
     echo "Enter WiFi password: "
     read wifi_pw
-    echo -e "\n\nConnecting to Wi-Fi...\n\n"
-    iwctl --passphrase $wifi_pw station wlan0 connect $wifi_name
+    echo; echo "Connecting to Wi-Fi..."
+    iwctl station wlan0 connect $wifi_name --passphrase $wifi_pw
 fi
 
-pacman -Sy pacman-contrib --noconfirm
+clear
 
-lsblk
-echo -e "\nChoose a drive (ex. nvme0n1): "
-read drive
-cfdisk /dev/$drive
+cat <<EOF > install_vars
+username="$username"
+password="$password"
+hostname="$hostname"
+drive="$drive"
+efi_part="$efi_part"
+swap_part="$swap_part"
+linux_part="$linux_part"
+wifi_name="$wifi_name"
+wifi_pw="$wifi_pw"
+EOF
 
-echo -e "\n"
-sleep 1
-lsblk
-echo -e "\nChoose the swap partition (ex. nvme0n1p5): "
-read swap_part
+cat install_vars <(sed '1,/^# Part 2$/d' `basename $0`) > /mnt/install-part-2.sh
+chmod +x /mnt/install-part-2.sh
+cat install_vars <(sed '1,/^# Part 3$/d' `basename $0`) > /mnt/install-part-3.sh
+
+rm install_vars
+
 mkswap /dev/$swap_part
 swapon /dev/$swap_part
 
-echo -e "\n"
-lsblk
-echo -e "\nChoose the Linux partition (ex. nvme0n1p6): "
-read linux_part
 mkfs.ext4 /dev/$linux_part
 mount /dev/$linux_part /mnt
+
+pacman -Sy pacman-contrib --noconfirm
 
 echo -e "\n\nRanking pacman mirrors...\n\n"
 cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
@@ -45,19 +76,15 @@ pacstrap /mnt base base-devel linux linux-firmware \
     mesa xf86-video-amdgpu vulkan-radeon libva-mesa-driver mesa-vdpau \
     pipewire pipewire-alsa wireplumber pipewire-pulse pipewire-jack \
     networkmanager sudo vim git pacman-contrib firefox man-db man-pages xorg-xrandr \
-    zsh python obs-studio eza scrot zip stow picom feh
+    zsh python obs-studio eza scrot zip stow picom feh wget
 
 genfstab -U /mnt >> /mnt/etc/fstab
 
-sed '1,/^# Part 2$/d' `basename $0` > /mnt/install.sh
-chmod +x /mnt/install.sh
+arch-chroot /mnt ./install-part-2.sh
 
-arch-chroot /mnt ./install.sh
-
-systemctl reboot
+reboot
 
 # Part 2
-
 ln -sf /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
 hwclock --systohc
 
@@ -65,7 +92,7 @@ echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
 echo "LANG=en_US.UTF-8" > /etc/locale.conf
 
-echo "Choose a hostname: "
+echo -e "\n\nChoose a hostname: "
 read hostname
 echo $hostname > /etc/hostname
 
@@ -84,7 +111,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 
 systemctl enable NetworkManager.service
 
-echo "Choose a username: "
+echo -e "\n\nChoose a username: "
 read username
 useradd -m -G wheel -s /usr/bin/zsh $username
 echo -e "\n\nEnter password for $username: "
@@ -92,24 +119,20 @@ passwd $username
 
 echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-new_install=/home/$username/install.sh
-sed '1,/^# Part 3$/d' install.sh > $new_install
-chown $username:$username $new_install
-chmod +x $new_install
+echo "sh /install-part-3.sh" > /home/$username/.zshrc
 
-echo "./install.sh" > /home/$username/.zshrc
-
-rm /install.sh
+rm /install-part-2.sh
 
 exit
 
 # Part 3
 rm .bash*
-rm .zshrc
+sudo rm .zshrc
 
 wget -q --spider https://google.com
 if [ $? -ne 0 ]; then
     nmtui
+    clear
 fi
 
 sudo pacman -Syu --noconfirm
@@ -147,6 +170,10 @@ sudo make -C ~/.config/st install
 git clone https://github.com/hotsno/dwm ~/.config/dmenu
 sudo make -C ~/.config/dmenu install
 
-rm install.sh
+sudo rm /install-part-3.sh
 
-pkill -u $(whoami)
+echo; echo "All done! After a few seconds, you will automatically be logged out..."
+echo "After logging back in, just run the "startx" command to enter dwm!"
+sleep 5
+
+loginctl kill-user $(whoami)
