@@ -1,9 +1,9 @@
 # Part 1
-clear; echo; echo "Welcome to hotsno's arch installer!"
+clear; echo; echo "Welcome to hotsno's Arch Linux installer!"
 echo; echo "NOTE: This script was created with the following assumptions:"
 echo "- You are planning to dual-boot with Windows"
 echo "- Your Windows and Linux install will live on the same drive"
-echo "- You have unallocated space on that drive (if not, first shrink your C: drive in Windows)"
+echo "- You have unallocated space on that drive (if not, first shrink your C:\ drive in Windows)"
 echo; echo "(Press ENTER to continue)"
 read
 
@@ -48,6 +48,12 @@ fi
 
 clear
 
+mkswap /dev/$swap_part
+swapon /dev/$swap_part
+
+mkfs.ext4 /dev/$linux_part
+mount /dev/$linux_part /mnt
+
 cat <<EOF > install_vars
 username="$username"
 password="$password"
@@ -66,15 +72,9 @@ cat install_vars <(sed '1,/^# Part 3$/d' `basename $0`) > /mnt/install-part-3.sh
 
 rm install_vars
 
-mkswap /dev/$swap_part
-swapon /dev/$swap_part
-
-mkfs.ext4 /dev/$linux_part
-mount /dev/$linux_part /mnt
-
 pacman -Sy pacman-contrib --noconfirm
 
-clear; echo; echo "Ranking pacman mirrors..."
+clear; echo "Ranking pacman mirrors..."
 cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
 rankmirrors -n 10 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist
 
@@ -90,6 +90,8 @@ genfstab -U /mnt >> /mnt/etc/fstab
 
 arch-chroot /mnt ./install-part-2.sh
 
+clear; echo; echo "Rebooting in 5 seconds..."
+sleep 5
 reboot
 
 # Part 2
@@ -99,6 +101,8 @@ hwclock --systohc
 echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
 echo "LANG=en_US.UTF-8" > /etc/locale.conf
+
+echo $hostname > /etc/hostname
 
 echo "127.0.0.1       localhost" >> /etc/hosts
 echo "::1             localhost" >> /etc/hosts
@@ -170,8 +174,8 @@ sudo make -C ~/.config/dmenu install
 
 sudo rm /install-part-3.sh
 
-echo; echo "All done! After a few seconds, you will automatically be logged out..."
+clear; echo; echo "All done! After a few seconds, you will automatically be logged out..."
 echo "After logging back in, just run the "startx" command to enter dwm!"
-sleep 5
+sleep 10
 
 loginctl kill-user $(whoami)
