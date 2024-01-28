@@ -1,6 +1,11 @@
 # Part 1
-echo; echo; echo "Welcome to hotsno arch-install!"
-sleep 1
+clear; echo; echo "Welcome to hotsno's arch installer!"
+echo; echo "NOTE: This script was created with the following assumptions:"
+echo "- You are planning to dual-boot with Windows"
+echo "- Your Windows and Linux install will live on the same drive"
+echo "- You have unallocated space on that drive (if not, first shrink your C: drive in Windows)"
+echo; echo "(Press ENTER to continue)"
+read
 
 echo; echo "Choose a username: "
 read username
@@ -12,11 +17,15 @@ echo "Choose a hostname: "
 read hostname
 
 clear; lsblk
-echo; echo "Choose a drive (ex. nvme0n1): "
+echo; echo "Choose the drive to partition (ex. nvme0n1): "
 read drive
+echo; echo "Create an ext4 (Linux file system) and a SWAP partition"
+echo; echo "(Press ENTER to continue)"
+read
 cfdisk /dev/$drive
 
 clear; sleep 1; sudo fdisk -l
+echo; echo "NOTE: You should be able to reuse the Windows EFI parition"
 echo; echo "Choose the EFI partition (ex. nvme0n1p1): "
 read efi_part
 
@@ -65,11 +74,10 @@ mount /dev/$linux_part /mnt
 
 pacman -Sy pacman-contrib --noconfirm
 
-echo -e "\n\nRanking pacman mirrors...\n\n"
+clear; echo; echo "Ranking pacman mirrors..."
 cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
 rankmirrors -n 10 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist
 
-echo -e "\n\nRunning pacstrap...\n\n"
 pacstrap /mnt base base-devel linux linux-firmware \
     grub efibootmgr os-prober \
     xorg-server xorg-xinit libx11 libxft libxinerama freetype2 fontconfig noto-fonts noto-fonts-cjk \
