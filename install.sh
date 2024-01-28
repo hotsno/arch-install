@@ -1,12 +1,16 @@
 # Part 1
-wifi_name=""
-wifi_pw=""
-
-echo -e "\n\nWelcome to hotsno arch-install!\n\n\n"
+echo -e "\n\nWelcome to hotsno arch-install!\n\n"
 sleep 1
 
-echo -e "\n\nConnecting to Wi-Fi...\n\n\n"
-iwctl --passphrase $wifi_pw station wlan0 connect $wifi_name
+wget -q --spider https://google.com
+if [ $? -ne 0 ]; then
+    echo "Enter WiFi name: "
+    read wifi_name
+    echo "Enter WiFi password: "
+    read wifi_pw
+    echo -e "\n\nConnecting to Wi-Fi...\n\n"
+    iwctl --passphrase $wifi_pw station wlan0 connect $wifi_name
+fi
 
 pacman -Sy pacman-contrib --noconfirm
 
@@ -30,11 +34,11 @@ read linux_part
 mkfs.ext4 /dev/$linux_part
 mount /dev/$linux_part /mnt
 
-echo -e "\n\nRanking pacman mirrors...\n\n\n"
+echo -e "\n\nRanking pacman mirrors...\n\n"
 cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
 rankmirrors -n 10 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist
 
-echo -e "\n\nRunning pacstrap...\n\n\n"
+echo -e "\n\nRunning pacstrap...\n\n"
 pacstrap /mnt base base-devel linux linux-firmware \
     grub efibootmgr os-prober \
     xorg-server xorg-xinit libx11 libxft libxinerama freetype2 fontconfig noto-fonts noto-fonts-cjk \
@@ -45,16 +49,14 @@ pacstrap /mnt base base-devel linux linux-firmware \
 
 genfstab -U /mnt >> /mnt/etc/fstab
 
-sed '1,/^# Part 2$/d' `basename $0` > /mnt/install-2.sh
-chmod +x /mnt/install-2.sh
+sed '1,/^# Part 2$/d' `basename $0` > /mnt/install.sh
+chmod +x /mnt/install.sh
 
-arch-chroot /mnt ./install-2.sh
+arch-chroot /mnt ./install.sh
 
 systemctl reboot
 
 # Part 2
-hostname=""
-username=""
 
 ln -sf /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
 hwclock --systohc
@@ -63,6 +65,8 @@ echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
 echo "LANG=en_US.UTF-8" > /etc/locale.conf
 
+echo "Choose a hostname: "
+read hostname
 echo $hostname > /etc/hostname
 
 echo "127.0.0.1       localhost" >> /etc/hosts
@@ -80,42 +84,47 @@ grub-mkconfig -o /boot/grub/grub.cfg
 
 systemctl enable NetworkManager.service
 
+echo "Choose a username: "
+read username
 useradd -m -G wheel -s /usr/bin/zsh $username
 echo -e "\n\nEnter password for $username: "
 passwd $username
 
 echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-install_3_path=/home/$username/install-3.sh
-sed '1,/^# Part 3$/d' install-2.sh > $install_3_path
-chown $username:$username $install_3_path
-chmod +x $install_3_path
+new_install=/home/$username/install.sh
+sed '1,/^# Part 3$/d' install.sh > $new_install
+chown $username:$username $new_install
+chmod +x $new_install
 
-rm /install-2.sh
+echo "./install.sh" > /home/$username/.zshrc
+
+rm /install.sh
 
 exit
 
 # Part 3
-rm -rf .bash*
-nmtui
+rm .bash*
+rm .zshrc
+
+wget -q --spider https://google.com
+if [ $? -ne 0 ]; then
+    nmtui
+fi
 
 sudo pacman -Syu --noconfirm
 
 mkdir dev dox pix dl media
 
-git clone https://github.com/hotsno/wallpapers $HOME/pix/wall
+git clone https://github.com/hotsno/wallpapers pix/wall
 
-git clone https://github.com/hotsno/dotfiles $HOME/.dotfiles
-cd .dotfiles
-stow --no-folding .
-cd ..
+git clone https://github.com/hotsno/dotfiles .dotfiles
+(cd .dotfiles && stow --no-folding .)
 
 pacman -S --needed git base-devel
 git clone https://aur.archlinux.org/yay-bin.git
-cd yay-bin
-yes | makepkg -si
-cd ..
-rm -rf yay
+(cd yay-bin && yes | makepkg -si)
+rm -rf yay-bin
 
 yes | yay -S ttf-twemoji ttf-meslo-nerd-font-powerlevel10k
 sudo ln -sf /usr/share/fonctconfig/conf.avail/75-twemoji.conf /etc/fonts/conf.d/75-twemoji.conf
@@ -129,24 +138,15 @@ xdg-settings set default-web-browser firefox.desktop
 
 systemctl --user --now enable pipewire pipewire-pulse wireplumber
 
-mkdir .config
-cd .config
+git clone https://github.com/hotsno/dwm ~/.config/dwm
+sudo make -C ~/.config/dwm install
 
-git clone https://github.com/hotsno/dwm
-cd dwm
-sudo make clean install
-cd ..
+git clone https://github.com/hotsno/dwm ~/.config/st
+sudo make -C ~/.config/st install
 
-git clone https://github.com/hotsno/st
-cd st
-sudo make clean install
-cd ..
+git clone https://github.com/hotsno/dwm ~/.config/dmenu
+sudo make -C ~/.config/dmenu install
 
-git clone https://github.com/hotsno/dmenu
-cd dmenu
-sudo make clean install
-cd ~
+rm install.sh
 
-rm ~/install-3.sh
-
-exit
+pkill -u $(whoami)
