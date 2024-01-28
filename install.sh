@@ -128,6 +128,8 @@ rm /install-part-2.sh
 exit
 
 # Part 3
+clear
+
 rm .bash*
 sudo rm .zshrc
 
@@ -166,10 +168,10 @@ systemctl --user --now enable pipewire pipewire-pulse wireplumber
 git clone https://github.com/hotsno/dwm ~/.config/dwm
 sudo make -C ~/.config/dwm install
 
-git clone https://github.com/hotsno/dwm ~/.config/st
+git clone https://github.com/hotsno/st ~/.config/st
 sudo make -C ~/.config/st install
 
-git clone https://github.com/hotsno/dwm ~/.config/dmenu
+git clone https://github.com/hotsno/dmenu ~/.config/dmenu
 sudo make -C ~/.config/dmenu install
 
 sudo rm /install-part-3.sh
