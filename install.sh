@@ -82,13 +82,13 @@ pacstrap /mnt base base-devel linux linux-firmware \
     grub efibootmgr os-prober \
     mesa xf86-video-amdgpu vulkan-radeon libva-mesa-driver mesa-vdpau \
     zsh networkmanager sudo pacman-contrib man-db man-pages \
-    git python python-pipx python-pip nodejs npm \
+    git python python-pipx python-pip nodejs npm rustup \
     pipewire pipewire-alsa wireplumber pipewire-pulse pipewire-jack \
     hyprland xdg-desktop-portal-hyprland polkit-kde-agent qt5-wayland qt6-wayland \
-    wofi waybar grim slurp socat dunst python-pywal \
+    wofi waybar grim slurp socat dunst libnotify python-pywal wl-clipboard \
     noto-fonts noto-fonts-cjk otf-font-awesome ttf-jetbrains-mono \
     firefox vim kitty mpv obs-studio transmission-cli \
-    eza zip stow wget btop imagemagick
+    eza zip stow wget btop imagemagick jq
 
 genfstab -U /mnt >> /mnt/etc/fstab
 
@@ -157,7 +157,7 @@ git clone https://aur.archlinux.org/yay-bin.git
 (cd yay-bin && yes | makepkg -si)
 rm -rf yay-bin
 
-yes | yay -S ttf-twemoji ttf-meslo-nerd-font-powerlevel10k swwww
+yes | yay -S ttf-twemoji ttf-meslo-nerd-font-powerlevel10k swww
 sudo ln -sf /usr/share/fonctconfig/conf.avail/75-twemoji.conf /etc/fonts/conf.d/75-twemoji.conf
 
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
