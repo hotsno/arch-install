@@ -19,7 +19,7 @@ read hostname
 clear; lsblk
 echo; echo "Choose the drive to partition (ex. nvme0n1): "
 read drive
-echo; echo "Create an ext4 (Linux file system) and a SWAP partition"
+echo; echo 'Create a "Linux filesystem" and a "Linux swap" partition'
 echo; echo "(Press ENTER to continue)"
 read
 cfdisk /dev/$drive
@@ -30,10 +30,10 @@ echo; echo "Choose the EFI partition (ex. nvme0n1p1): "
 read efi_part
 
 clear; lsblk
-echo; echo "Choose the SWAP partition (ex. nvme0n1p5): "
+echo; echo "Choose the swap partition (ex. nvme0n1p5): "
 read swap_part
 
-echo; echo "Choose the root Linux partition (ex. nvme0n1p6): "
+echo; echo "Choose the Linux filesystem partition (ex. nvme0n1p6): "
 read linux_part
 
 curl -Is https://www.google.com | head -1 | grep 200 >/dev/null
@@ -80,11 +80,15 @@ rankmirrors -n 10 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist
 
 pacstrap /mnt base base-devel linux linux-firmware \
     grub efibootmgr os-prober \
-    xorg-server xorg-xinit libx11 libxft libxinerama freetype2 fontconfig noto-fonts noto-fonts-cjk \
     mesa xf86-video-amdgpu vulkan-radeon libva-mesa-driver mesa-vdpau \
+    zsh networkmanager sudo pacman-contrib man-db man-pages \
+    git python python-pipx python-pip nodejs npm \
     pipewire pipewire-alsa wireplumber pipewire-pulse pipewire-jack \
-    networkmanager sudo vim git pacman-contrib firefox man-db man-pages xorg-xrandr \
-    zsh python obs-studio eza scrot zip stow picom feh wget
+    hyprland xdg-desktop-portal-hyprland polkit-kde-agent qt5-wayland qt6-wayland \
+    wofi waybar grim slurp socat dunst python-pywal \
+    noto-fonts noto-fonts-cjk otf-font-awesome ttf-jetbrains-mono \
+    firefox vim kitty mpv obs-studio transmission-cli \
+    eza zip stow wget btop imagemagick
 
 genfstab -U /mnt >> /mnt/etc/fstab
 
@@ -153,7 +157,7 @@ git clone https://aur.archlinux.org/yay-bin.git
 (cd yay-bin && yes | makepkg -si)
 rm -rf yay-bin
 
-yes | yay -S ttf-twemoji ttf-meslo-nerd-font-powerlevel10k
+yes | yay -S ttf-twemoji ttf-meslo-nerd-font-powerlevel10k swwww
 sudo ln -sf /usr/share/fonctconfig/conf.avail/75-twemoji.conf /etc/fonts/conf.d/75-twemoji.conf
 
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
@@ -165,19 +169,10 @@ xdg-settings set default-web-browser firefox.desktop
 
 systemctl --user --now enable pipewire pipewire-pulse wireplumber
 
-git clone https://github.com/hotsno/dwm ~/.config/dwm
-sudo make -C ~/.config/dwm install
-
-git clone https://github.com/hotsno/st ~/.config/st
-sudo make -C ~/.config/st install
-
-git clone https://github.com/hotsno/dmenu ~/.config/dmenu
-sudo make -C ~/.config/dmenu install
-
 sudo rm /install-part-3.sh
 
 clear; echo "All done! After a few seconds, you will automatically be logged out..."
-echo "After logging back in, just run the "startx" command to enter dwm!"
+echo "After logging back in, just run the "Hyprland" command!"
 sleep 10
 
 loginctl kill-user $(whoami)
