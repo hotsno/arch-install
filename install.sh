@@ -152,6 +152,11 @@ git clone https://github.com/hotsno/wallpapers pix/wall
 git clone https://github.com/hotsno/dotfiles .dotfiles
 (cd .dotfiles && stow --no-folding .)
 
+git clone https://github.com/bmFtZQ/edge-frfox
+mv "edge-frfox/chrome/" "edge-frfox/user.js" "$HOME/.mozilla/firefox/*.default-release/"
+rm -rf edge-frfox
+cat "$HOME/.config/firefox/user.js" >> "$HOME/.mozilla/firefox/*.default-release/user.js"
+
 pacman -S --needed git base-devel
 git clone https://aur.archlinux.org/yay-bin.git
 (cd yay-bin && yes | makepkg -si)
