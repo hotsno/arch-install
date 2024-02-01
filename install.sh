@@ -159,8 +159,8 @@ ff_profile=$(find $HOME/.mozilla/firefox -type d -name "*default-release")
 git clone https://github.com/bmFtZQ/edge-frfox
 mv "edge-frfox/chrome/" "edge-frfox/user.js" "$ff_profile"
 rm -rf edge-frfox
-cat "$HOME/.config/firefox/user.js" >> "$ff_profile"
-echo "userpref("browser.download.dir", "$HOME/dl")" >> "$ff_profile"
+cat "$HOME/.config/firefox/user.js" >> "$ff_profile/user.js"
+echo "userpref("browser.download.dir", "$HOME/dl")" >> "$ff_profile/user.js"
 
 pacman -S --needed git base-devel
 git clone https://aur.archlinux.org/yay-bin.git
