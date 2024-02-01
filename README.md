@@ -35,7 +35,7 @@ xdg-open "https://github.com/settings/keys"
 # Click "New SSH key" and paste
 ```
 
-### Create SSH alias (so you don't have to use `git@github.com`)
+### Create SSH alias
 
 You can do this so you can type `gh` instead of `git@github.com`
 
