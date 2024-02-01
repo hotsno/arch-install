@@ -1,15 +1,14 @@
 # arch-install
-Arch installer script
 
-> [!IMPORTANT]  
-> While I tried to keep this free of hard-coded strings and the like, this is mainly meant for personal use
+> [!NOTE]  
+> While I tried to keep this free of hard-coded strings and such, this is mainly meant for personal use
 
-## Requirements
+## (Intended) Requirements
 - Windows is already installed
 - Windows and Linux will live on the same drive
 - You have unallocated space on that drive
     - If not, first shrink your C:\ drive in Windows using Disk Management
-- Intended for systems w/ AMD GPUs
+- AMD GPU
 
 
 ## Post-install
