@@ -152,10 +152,15 @@ git clone https://github.com/hotsno/wallpapers pix/wall
 git clone https://github.com/hotsno/dotfiles .dotfiles
 (cd .dotfiles && stow --no-folding .)
 
+firefox --headless &
+sleep 3
+pkill firefox
+ff_profile=$(find $HOME/.mozilla/firefox -type d -name "*default-release")
 git clone https://github.com/bmFtZQ/edge-frfox
-mv "edge-frfox/chrome/" "edge-frfox/user.js" "$HOME/.mozilla/firefox/*.default-release/"
+mv "edge-frfox/chrome/" "edge-frfox/user.js" "$ff_profile"
 rm -rf edge-frfox
-cat "$HOME/.config/firefox/user.js" >> "$HOME/.mozilla/firefox/*.default-release/user.js"
+cat "$HOME/.config/firefox/user.js" >> "$ff_profile"
+echo "userpref("browser.download.dir", "$HOME/dl")" >> "$ff_profile"
 
 pacman -S --needed git base-devel
 git clone https://aur.archlinux.org/yay-bin.git
