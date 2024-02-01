@@ -14,7 +14,11 @@
 2. Use [Rufus](https://rufus.ie/en/) to [burn](https://chat.openai.com/share/bc24dc4d-a928-4615-8123-86dad0c3085f) the `.iso` to a USB stick
 3. Use Disk Management to [shrink](https://chat.openai.com/share/82ce0557-0003-41f1-89fd-6041f6239885) the Windows partition
 4. [Boot](https://chat.openai.com/share/44683835-848e-4a75-9c36-89229807b2c7) from the USB stick
-5. Run the installer with: `curl -sSL https://raw.githubusercontent.com/hotsno/arch-install/main/install.sh | sh`
+5. Run the installer with:
+```sh
+curl -L -O https://raw.githubusercontent.com/hotsno/arch-install/main/install.sh
+sh install.sh
+```
 6. If you mess up on any of the inputs, spam `Ctrl-C`!
 
 
@@ -43,6 +47,7 @@ Add the following to `$XDG_CONFIG_HOME/ssh/config`:
 ```
 Host *
     UserKnownHostsFile=~/.config/ssh/known_hosts
+
 Host gh
     HostName github.com
     User git
